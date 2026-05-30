@@ -1,0 +1,59 @@
+# xclaw.yaml — Agent 行为配置
+# 非敏感配置，可安全提交到 git。
+# 密钥（API Key 等）和机器相关参数（端口、URL）请放 .env，不要放这里。
+
+agent:
+  maxIterations: 50          # 单轮最多工具调用次数，防止无限循环
+  providers:
+    primary: openai          # 主 Provider
+    fallback: claude         # 降级 Provider，primary 失败时自动切换；留空则不降级
+
+sandbox:
+  mode: host                 # host = 应用层沙箱（默认）；full = CubeSandbox KVM
+  workDir: ./workspace       # Host Mode 下允许读写的根目录
+  hitl:
+    autoApproveReads: true   # true = 读操作自动放行；false = 全部操作都需要人工确认
+
+tools:
+  file:
+    read:
+      allowedExtensions:     # 只允许读这些格式，其余一律拒绝
+        - .txt
+        - .md
+        - .json
+        - .js
+        - .ts
+        - .py
+        - .go
+        - .yaml
+        - .yml
+        - .toml
+      maxBytes: 65536        # 64 KB，防止读取超大文件阻塞 Agent 上下文
+
+    write:
+      allowedExtensions:     # 只允许写这些格式；.sh .bat 及二进制文件禁止写入
+        - .txt
+        - .md
+        - .json
+        - .js
+        - .ts
+        - .py
+        - .go
+        - .yaml
+        - .yml
+        - .toml
+      maxBytes: 32768        # 32 KB，防止垃圾数据写满磁盘
+
+    delete:
+      enabled: false         # Host Mode 下永久禁止删除文件，勿开
+
+state:
+  dbPath: xclaw.db           # SQLite 数据库路径（相对于工作目录）；存储 sessions + traces 两张表
+                             # 修改路径后旧历史不会自动迁移，重命名文件即可保留
+
+browser:
+  headless: true             # true = 无头模式（服务器推荐）；false = 显示浏览器窗口
+  viewport:
+    width: 1280
+    height: 800
+  maxContentChars: 20000     # browser_content 截断限制
