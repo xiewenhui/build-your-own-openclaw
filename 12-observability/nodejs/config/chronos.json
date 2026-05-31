@@ -1,0 +1,20 @@
+[
+  {
+    "id": "server-health-monitor",
+    "expression": "*/15 * * * *",
+    "taskPrompt": "检查当前主机状态。使用 shell 工具执行：\n1. 内存检查：node skills/sysinfo/scripts/sysinfo.js memory\n2. 磁盘检查：node skills/sysinfo/scripts/sysinfo.js disk\n\n判断标准：\n- 内存使用率 > 85%：WARNING\n- 磁盘剩余 < 10%：WARNING\n- 两者同时超标：CRITICAL\n\n正常则保持静默，不做任何操作。超标则调用 notify 工具告警，级别参照上述标准。",
+    "enabled": true
+  },
+  {
+    "id": "codebase-security-audit",
+    "expression": "*/18 * * * *",
+    "taskPrompt": "使用 shell 工具执行：node scripts/scan-secrets.js\n\n判断规则：\n- 输出第一行是 CLEAN：静默结束，不做任何操作。\n- 输出第一行是 FOUND：立即调用 notify 工具，级别 CRITICAL，消息中列出所有发现的文件和行号（从输出的后续行获取）。",
+    "enabled": true
+  },
+  {
+    "id": "server-health-monitor-test",
+    "expression": "*/1 * * * *",
+    "taskPrompt": "说一句话：'巡检完成，一切正常'，然后静默结束。",
+    "enabled": true
+  }
+]
