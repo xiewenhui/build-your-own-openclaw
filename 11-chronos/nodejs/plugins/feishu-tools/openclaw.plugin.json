@@ -1,0 +1,19 @@
+{
+  "id": "feishu-tools",
+  "activation": {
+    "onStartup": true
+  },
+  "enabledByDefault": true,
+  "contracts": {
+    "tools": ["feishu_send_message"]
+  },
+  "skills": ["./skills"],
+  "configSchema": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "appId": { "type": "string" },
+      "appSecret": { "type": "string" }
+    }
+  }
+}
