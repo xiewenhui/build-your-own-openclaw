@@ -106,8 +106,9 @@ function checkExt(filePath: string, allowed: Set<string>): void {
 
 // ── Defense 4: Least-privilege child process execution ──────────────────────
 
-export function spawnSafe(cmd: string, args: string[]): Promise<string> {
+export function spawnSafe(cmd: string, args: string[], cwd?: string): Promise<string> {
   const opts: any = { shell: false };
+  if (cwd) opts.cwd = cwd;
   if (process.platform !== 'win32') {
     const uid = parseInt(process.env['AGENT_RUN_UID'] ?? '', 10);
     const gid = parseInt(process.env['AGENT_RUN_GID'] ?? '', 10);
@@ -263,7 +264,8 @@ function registerHostModeTools(hitl: HITLConfirmer, cfg: Config): void {
         throw new Error('user denied');
       }
       return spawnSafe(process.platform === 'win32' ? 'cmd' : 'sh',
-        process.platform === 'win32' ? ['/c', params['command']!] : ['-c', params['command']!]);
+        process.platform === 'win32' ? ['/c', params['command']!] : ['-c', params['command']!],
+        workDir);
     },
   );
 
